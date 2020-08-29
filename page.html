@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title> Checkers 2.0 </title>
+    <link rel="stylesheet" href="./style.css"></link>
+    <script type="text/javascript" src="./client.js"></script>
+</head>
+<body>
+    <div class="navbar">
+        <div class="logo nav-elem">
+            <p class="h-text" onclick="load_body(this, './page.html')"> checkers.org </p>
+            <div class="logo-pawn black" id="logo-btn" onclick="logochange(this)"></div>
+        </div>
+        <div class="signin nav-elem">
+            <p class="h-text" onclick="sign_click(this)" id="signed"> sign in </p>
+        </div>
+    </div>
+
+    <div class="new_game" > 
+        <p class = "h-text l-text" onclick="new_game(this)"> new game </p>
+    </div>
+
+</body>
+</html>

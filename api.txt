@@ -1,0 +1,21 @@
+{
+    //s2c
+    ['handshake',   userID], 
+    ['game',        color, game_hash, opp_name, opp_elo],
+    ['move',        move, time],
+    ['end',         score, rating_shift],
+    ['signed',      success, name, elo],
+    ['signed',      failure],
+    ['registered',  msg],
+
+    //c2s
+    ['new_game',    userID ],
+    ['flag',        game_hash, userID],
+    ['move',        game_hash, userID, move, time],
+    ['signin',      userID, username, password],
+    ['signin',      userID, username, password],
+    ['register',    userID, username, password, email],
+}
+
+
+
