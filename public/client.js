@@ -517,7 +517,8 @@ function playIt(elem){
 
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
-const domain = '192.168.43.45';
+// const domain = '192.168.43.45';
+const domain = 'localhost';
 
 var ws = new WebSocket('ws://'+domain+':8081');
 var id = undefined;
@@ -595,8 +596,9 @@ function signin(){
 }
 
 function sign_click(elem){
+    // window.location = './sign.html';
     if(logged == true) return;
-    load_body(elem, './sign.html');
+    load_body(elem, 'sign.html');
 }
 
 function register(){
@@ -643,7 +645,7 @@ function after_game(){
 
 function new_game(elem){
     ws.send(JSON.stringify(['new_game', id]));
-    load_body(elem, './loader.html');
+    load_body(elem, 'loader.html');
 }
 
 function print_names(yourName, yourElo, oppName, oppElo){
@@ -699,7 +701,7 @@ function parse_message(msg){
         your_time = 3 * 60 * 100;
         opponent_time = 3 * 60 * 100;
         game_pos = Pos.initial();
-        load_body(this, './board.html');
+        load_body(this, 'board.html');
         setTimeout(() => {after_new_game();}, 500); //doesn't work without timeot
     }
     else if(msg[0] == 'move'){
@@ -737,7 +739,7 @@ function parse_message(msg){
             your_name = msg[2];
             your_elo  = msg[3];
             logged = true;
-            load_body(this, './page.html');
+            load_body(this, 'index.html');
         }
         else{
             console.log(msg[1]);
@@ -747,8 +749,7 @@ function parse_message(msg){
     else if(msg[0] == 'registered'){
         if(msg[1] == 'success'){
             console.log('check your mail to sign in');
-            window.location = './page.html';
-            //load_body(this, './page.html');
+            window.location = 'index.html';
         }
         else{
             console.log(msg[1]);

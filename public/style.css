@@ -1,4 +1,3 @@
-
 :root {
     --board-side: 80vmin;
     --square-side: calc(var(--board-side)/8);

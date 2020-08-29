@@ -590,11 +590,11 @@ var db = require('./database.json');
 
 
 const fs = require('fs');
-const http = require('http');
-// const url = require('url');
-// const express = require('express');
+const express = require('express');
+const app = express();
 const path = require('path');
 const mailer = require('nodemailer');
+
 let transport = mailer.createTransport({
     host: 'smtp.gmail.com',
     port: 465,
@@ -604,59 +604,13 @@ let transport = mailer.createTransport({
     }
 });
 
-
-
-const server = http.createServer((req, res) => {
-    let contentFile;
-    let contentType;
-
-    contentFile = req.url;
-    if(req.url == '/'){
-        contentFile = './page.html';
-    }
-
-    const fileExt = path.extname(contentFile);
-    switch(fileExt){
-        case '.js':
-            contentType = 'text/javascript';
-            break;
-        case '.html':
-            contentType = 'text/html';
-            break;
-        case '.html/':
-            contentType = 'text/html';
-            break;
-        case '.css':
-            contentType = 'text/css';
-            break;
-        default:
-            contentType = 'text/html';
-    }
-
-    const contentPath = path.join(__dirname, contentFile);
-
-    fs.readFile(contentPath, (err, content) => {
-        if(err){
-            res.writeHead(404, 'file not found');
-        }
-        else{
-            res.writeHead(200, {'Content-Type': contentType});
-            res.write(content);
-            res.end();
-        }
-    });
-});
-
-
-
-
-
-// const domain = '192.168.1.10';
-const domain = require('os').networkInterfaces()['wlan0'][0]['address'];
+// const domain = require('os').networkInterfaces()['wlan0'][0]['address'];
+const domain = 'localhost';
 const port = '8080';
 
+app.use(express.static(path.join(__dirname, 'public')));
 
-server.listen(8080, domain, () => {
+app.listen(port, domain, () => {
     console.log('fully online at: ' + domain + ':' + port);
 });
 
