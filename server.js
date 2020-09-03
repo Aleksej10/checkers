@@ -1,90 +1,3 @@
-class Game {
-    constructor(id, pos, player1, player2, player1_color, player2_color){
-        this._id = id;
-        this._pos = pos;
-        this._player1 = player1;
-        this._player2 = player2;
-        this._player1_color = player1_color;
-        this._player2_color = player2_color;
-    }
-
-    get id() { return this._id; }
-
-    playMove(m, otherPlayer, time){
-        var move = new ch.Move(m._type, m._fromSquare,  m._toSquare, m._captureSquare);
-        move.destringify();
-        this._pos.playMove(move);
-        players[otherPlayer].socket.send(JSON.stringify(['move', m, time]));
-
-        var moves = this._pos.genMoves(); //auto play forcing moves
-        while(moves.length == 1){ 
-            this._pos.playMove(moves[0]);
-            moves[0].stringify();
-            this._player1.socket.send(JSON.stringify(['move', moves[0], 'auto']));
-            this._player2.socket.send(JSON.stringify(['move', moves[0], 'auto']));
-            moves = this._pos.genMoves();
-        }
-
-        
-        if(this._pos.over()){
-            if(this._pos.result() == 'draw'){
-                const deltas = gl.glicko(this._player1, this._player2, 0.5);
-                this._player1.socket.send(JSON.stringify(['end', 'draw', deltas[0]]));
-                this._player2.socket.send(JSON.stringify(['end', 'draw', deltas[1]]));
-            }
-            else if(this._pos.result() == this._player1_color){
-                const deltas = gl.glicko(this._player1, this._player2, 1);
-                this._player1.socket.send(JSON.stringify(['end', 'won', deltas[0]]));
-                this._player2.socket.send(JSON.stringify(['end', 'lost', deltas[1]]));
-            }
-            else{
-                const deltas = gl.glicko(this._player1, this._player2, 0);
-                this._player1.socket.send(JSON.stringify(['end', 'lost', deltas[0]]));
-                this._player2.socket.send(JSON.stringify(['end', 'won', deltas[1]]));
-            }
-        }
-    }
-}
-
-class Player {
-    constructor(id, socket){
-        this._id = id;
-        this._socket = socket;
-        this._anon = true;
-        this._name = 'anon';
-        this._elo = '?';
-        this._dev = '?';
-    }
-
-    get id() { return this._id; }
-    get socket(){ return this._socket; }
-    get anon(){ return this._anon; }
-    get name() { return this._name; }
-    get elo() {return this._elo; }
-    get dev() {return this._dev; }
-    
-    sign(name, elo, dev){
-        this._anon = false;
-        this._name = name;
-        this._elo = elo;
-        this._dev = dev;
-    }
-
-    updateElo(elo, dev){
-        this._elo = elo;
-        this._dev = dev;
-
-        db[this._name].elo = elo;
-        db[this._name].dev = dev;
-        
-        fs.writeFileSync('./database.json', JSON.stringify(db), err => {
-            if(err) throw err;
-            console.log('elos updated');
-        });
-    }
-}
-
-
 var waiting = {};
 var games = {};
 var players = {}
@@ -94,12 +7,73 @@ var db = require('./database.json');
 const sha = require('./server_modules/sha.js');
 const ch = require('./server_modules/checkers.js');
 const gl = require('./server_modules/glicko.js');
+const pl = require('./server_modules/player.js');
+const gm = require('./server_modules/game.js');
 
 const fs = require('fs');
 const express = require('express');
 const app = express();
 const path = require('path');
 const mailer = require('nodemailer');
+const mong = require('mongoose');
+const dbString = "mongodb://localhost:27017/users";
+
+
+mong.connect(dbString, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+});
+
+mong.connection.once('open', () => {
+    console.log("mongo radi");
+});
+
+mong.connection.on('error', (e) => {
+    console.log(e);
+});
+
+const userSchema = new mong.Schema({
+    _id: mong.Schema.Types.ObjectId,
+    usernmae: {
+        type: String,
+        required: true,
+    },
+    password: {
+        type: String,
+        required: true,
+    },
+    email: {
+        type: String,
+        required: true,
+    },
+    elo: {
+        type: Number,
+        required: true,
+    },
+    dev: {
+        type: Number,
+        required: true,
+    },
+    verified: {
+        type: Boolean,
+        required: true,
+    },
+    verification: {
+        type: String,
+        required: false,
+    },
+});
+
+const userModel = mong.model('users', userSchema);
+
+userModel.findOne({username: 'creator'}, (err, res)=>{
+    if(err){
+        console.log(err);
+    }
+    else{
+        console.log(res);
+    }
+});
 
 let transport = mailer.createTransport({
     host: 'smtp.gmail.com',
@@ -125,9 +99,9 @@ const wss = new WebSocketServer({ port: 8081 });
 
 wss.on('connection', ((ws, req) => {
     const ip = req.socket.remoteAddress;
-    conosle.log(ip + " connected");
+    console.log(ip + " connected");
     const userID = (Math.random().toString(36)+'00000000000000000').slice(2, 13);
-    players[userID] = new Player(userID, ws);
+    players[userID] = new pl.Player(userID, ws, db);
     console.log('id ' + userID + ' connected');
     ws.send(JSON.stringify(['handshake', userID]));
 
@@ -148,8 +122,8 @@ function parse_message(msg){
         const gameID = msg[1];
         const userID = msg[2];
         var otherPlayer = undefined;
-        if(gameID.search(userID) == 0)  otherPlayer = gameID.slice(11);
-        else                            otherPlayer = gameID.slice(0, 11);
+        if(gameID.search(userID) == 0)  otherPlayer = players[gameID.slice(11)];
+        else                            otherPlayer = players[gameID.slice(0, 11)];
         games[gameID].playMove(msg[3], otherPlayer, msg[4]);
     }
     else if(msg[0] == 'flag'){
@@ -176,7 +150,7 @@ function parse_message(msg){
                 player2_color = 'white';
             }
             const gameID = player1 + player2;
-            games[gameID] = new Game(gameID, ch.Pos.initial(), players[player1], players[player2], player1_color, player2_color);
+            games[gameID] = new gm.Game(gameID, ch.Pos.initial(), players[player1], players[player2], player1_color, player2_color);
             console.log('new game started: ' + gameID);
             players[player1].socket.send(JSON.stringify(['game', player1_color, gameID, players[player2].name, players[player1].elo, players[player2].elo]));
             players[player2].socket.send(JSON.stringify(['game', player2_color, gameID, players[player1].name, players[player2].elo, players[player1].elo]));

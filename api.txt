@@ -19,3 +19,6 @@
 
 
 
+mongodump --db users
+mongorestore --db users dump/users  
+
