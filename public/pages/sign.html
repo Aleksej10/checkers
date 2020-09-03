@@ -5,7 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title> Checkers 2.0 </title>
     <link rel="stylesheet" href="./style.css"></link>
-    <script type="text/javascript" src="./client.js"></script>
+    <script type="text/javascript" src="client_modules/sha.js"></script>
+    <script type="text/javascript" src="client_modules/rules.js"></script>
+    <script type="text/javascript" src="client.js"></script>
 </head>
 <body>
     <div class="navbar">
@@ -15,9 +17,9 @@
         </div>
     </div>
 
-    <div class="sign-form reg-form">
+    <div class="sign-form">
         <div class="form-div title-div">
-            <p class="h-text form-title"> register </p>
+            <p class="h-text form-title"> sign in </p>
         </div>
         <div class="form-div input-div">
             <p class="input-p"> username </p>
@@ -31,14 +33,11 @@
         <div class="form-div">
             <input type="password" id="password">
         </div>
-        <div class="form-div input-div">
-            <p class="input-p"> email </p>
+        <div class="form-div submit-btn" id="submit-button" onclick="signin(this)">
+            <p class="input-p"> sign in </p>
         </div>
         <div class="form-div">
-            <input type="text" id="email">
-        </div>
-        <div class="form-div submit-btn" id="submit-button" onclick="register(this)">
-            <p class="input-p"> register </p>
+            <p class="h-text hyper-text" onclick="load_body(this, 'pages/register.html')"> register </p>
         </div>
     </div>
     
