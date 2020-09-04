@@ -95,5 +95,4 @@ function sha256(ascii) {
 	return result;
 };
 
-
 module.exports = {sha256};

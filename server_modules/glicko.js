@@ -1,3 +1,5 @@
+const uModel = require('./user_model.js');
+
 function glicko(player1, player2, result){
     if((player1.anon == true) || (player2.anon == true)){
         return ['',''];
@@ -37,9 +39,19 @@ function glicko(player1, player2, result){
     const RD_d_player1 = Math.max(min_RD, RD_d(r, rj, RD, RDj));
     const RD_d_player2 = Math.max(min_RD, RD_d(rj, r, RDj, RD));
 
-    player1.updateElo(String(r+r_d_player1), String(RD_d_player1));
-    player2.updateElo(String(rj+r_d_player2), String(RD_d_player2));
 
+    uModel.userModel.findOne({username: player1.name}, (err, user)=>{
+        if(err){ console.log(err); }
+        else{
+            player1.updateElo(String(r+r_d_player1), String(RD_d_player1), user);
+        }
+        uModel.userModel.findOne({username: player1.name}, (err, user)=>{
+            if(err){ console.log(err); }
+            else{
+                player2.updateElo(String(rj+r_d_player2), String(RD_d_player2), user);
+            }
+        });
+    });
 
     return [r_d_player1, r_d_player2];
 }

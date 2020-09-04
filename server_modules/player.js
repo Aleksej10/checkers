@@ -1,14 +1,11 @@
-const fs = require('fs');
-
 class Player {
-    constructor(id, socket, db){
+    constructor(id, socket){
         this._id = id;
         this._socket = socket;
         this._anon = true;
         this._name = 'anon';
         this._elo = '?';
         this._dev = '?';
-        this._db = db;
     }
 
     get id() { return this._id; }
@@ -25,17 +22,14 @@ class Player {
         this._dev = dev;
     }
 
-    updateElo(elo, dev){
+    updateElo(elo, dev, user){
         this._elo = elo;
         this._dev = dev;
 
-        this._db[this._name].elo = elo;
-        this._db[this._name].dev = dev;
-        
-        fs.writeFileSync('./database.json', JSON.stringify(this._db), err => {
-            if(err) throw err;
-            console.log('elos updated');
-        });
+
+        user.elo = elo; user.markModified('elo');
+        user.dev = dev; user.markModified('dev');
+        user.save((err)=>{if(err)console.log(err);});
     }
 }
 

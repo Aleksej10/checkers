@@ -97,20 +97,6 @@ var opponent_time = 3 * 60 * 100;
 
 var ticker = undefined;
 
-//ws.onopen = function (event) {
-//    //const id = (Math.random().toString(36)+'00000000000000000').slice(2, 18);
-//    //ws.send(JSON.stringify(['initial', id]));
-//};
-
-//ws.onclose = function() {
-//    // console.log("Connection is closed..."); 
-//    //TODO do something else
-//}
-
-// ws.onerror = function (err) {
-//     console.log('err: ', err);
-// }
-
 ws.onmessage = function (event) {
     const msg = JSON.parse(event.data);
     parse_message(msg);
@@ -123,7 +109,7 @@ function logochange(elem){
 }
 
 function flip_flop(){
-    const flop = document.getElementById("fflop");
+    const flop = document.getElementById('fflop');
     if(game_pos.side == Side.white){
         flop.className = 'pawn white';
     }
@@ -168,7 +154,7 @@ function register(){
 document.onkeydown = function (e) {
     e = e || window.event;
     switch (e.which || e.keyCode) {
-        case 13 : document.getElementById("submit-button").click();
+        case 13 : document.getElementById('submit-button').click();
             break;
     }
 }
@@ -176,8 +162,8 @@ document.onkeydown = function (e) {
 function after_new_game(){
     drawBoard(getBoardDiv());
     print_names(your_name, your_elo, opponent_name, opponent_elo);
-    document.getElementById("fflop").style.visibility = "visible";
-    document.getElementById("rematch").style.visibility = "hidden";
+    document.getElementById('fflop').style.visibility = 'visible';
+    document.getElementById('rematch').style.visibility = 'hidden';
     document.getElementById('player1-clock').innerHTML = '3:00:00';
     document.getElementById('player2-clock').innerHTML = '3:00:00';
     ticker = setInterval(tick, 10);
@@ -206,7 +192,8 @@ function print_result(msg, delta){
 }
 
 function tick(){
-    var player_clock;
+    var ticking_clock;
+    var resting_clock;
     var player_time;
     if(game_pos.side == game_side) { //your tick
         if(your_time <= 0){
@@ -215,18 +202,22 @@ function tick(){
         }
         player_time = your_time;
         your_time -= 1;
-        player_clock = document.getElementById('player2-clock');
+        ticking_clock = document.getElementById('player2-clock');
+        resting_clock = document.getElementById('player1-clock');
     }
     else{ //opponents ticks
         if(opponent_time < 0) return;
         player_time = opponent_time;
         opponent_time -= 1;
-        player_clock = document.getElementById('player1-clock');
+        ticking_clock = document.getElementById('player1-clock');
+        resting_clock = document.getElementById('player2-clock');
     }
     const minutes = '00' + parseInt(player_time/6000);
     const seconds = '00' + parseInt(player_time/100) % 60;
     const milis   = '00' + player_time % 100;
-    player_clock.innerHTML = 
+    ticking_clock.style.color = 'var(--accent)';
+    resting_clock.style.color = 'var(--dark-2)';
+    ticking_clock.innerHTML = 
         minutes.substr(minutes.length-2) + ':' +
         seconds.substr(seconds.length-2) + ':' +
         milis.substr(milis.length-2);

@@ -1,14 +1,13 @@
 var waiting = {};
 var games = {};
 var players = {}
-var db = require('./database.json'); 
-
 
 const sha = require('./server_modules/sha.js');
 const ch = require('./server_modules/checkers.js');
 const gl = require('./server_modules/glicko.js');
 const pl = require('./server_modules/player.js');
 const gm = require('./server_modules/game.js');
+const uModel = require('./server_modules/user_model.js');
 
 const fs = require('fs');
 const express = require('express');
@@ -18,62 +17,12 @@ const mailer = require('nodemailer');
 const mong = require('mongoose');
 const dbString = "mongodb://localhost:27017/users";
 
-
 mong.connect(dbString, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
 });
-
-mong.connection.once('open', () => {
-    console.log("mongo radi");
-});
-
-mong.connection.on('error', (e) => {
-    console.log(e);
-});
-
-const userSchema = new mong.Schema({
-    _id: mong.Schema.Types.ObjectId,
-    usernmae: {
-        type: String,
-        required: true,
-    },
-    password: {
-        type: String,
-        required: true,
-    },
-    email: {
-        type: String,
-        required: true,
-    },
-    elo: {
-        type: Number,
-        required: true,
-    },
-    dev: {
-        type: Number,
-        required: true,
-    },
-    verified: {
-        type: Boolean,
-        required: true,
-    },
-    verification: {
-        type: String,
-        required: false,
-    },
-});
-
-const userModel = mong.model('users', userSchema);
-
-userModel.findOne({username: 'creator'}, (err, res)=>{
-    if(err){
-        console.log(err);
-    }
-    else{
-        console.log(res);
-    }
-});
+mong.connection.once('open', () => { console.log("mongo is online"); });
+mong.connection.on('error', (e) => { console.log(e); });
 
 let transport = mailer.createTransport({
     host: 'smtp.gmail.com',
@@ -83,6 +32,18 @@ let transport = mailer.createTransport({
         pass: 'eHx8LiLCbTnLqtT'
     }
 });
+
+function welcomeLetter(mail, uname, verification){
+    const msg = {
+        // from: 'dama23156@gmail.com',
+        from: 'checkers.org',
+        to: mail,
+        subject: 'welcome to checkers 2.0',
+        text: 'hey ' + uname + ', welcome to checkers 2.0, to finish registration simply use this password in your next sign in: ' + verification + ', after that you can sign in normally with your password.',
+        html: '<p>hey ' + uname + ', welcome to <b>checkers 2.0</b>, to finish registration simply use this password in your next sign in: <b>' + verification + '</b>, after that you can sign in normally with your password.</p>'
+    };
+    return msg;
+}
 
 // const domain = require('os').networkInterfaces()['wlan0'][0]['address'];
 const domain = 'localhost';
@@ -94,25 +55,22 @@ app.listen(port, domain, () => {
     console.log('fully online at: ' + domain + ':' + port);
 });
 
+
+
 const WebSocketServer = require('ws').Server;
 const wss = new WebSocketServer({ port: 8081 });
 
 wss.on('connection', ((ws, req) => {
     const ip = req.socket.remoteAddress;
     console.log(ip + " connected");
-    const userID = (Math.random().toString(36)+'00000000000000000').slice(2, 13);
-    players[userID] = new pl.Player(userID, ws, db);
+    const userID = (Math.random().toString(36)+'00000000000000000').slice(2, 13); //TODO sha256(ip)
+    players[userID] = new pl.Player(userID, ws);
     console.log('id ' + userID + ' connected');
     ws.send(JSON.stringify(['handshake', userID]));
 
     ws.on('message', (message) => {
         const msg = JSON.parse(message);
         parse_message(msg);
-    });
-
-    ws.on('end', () => {
-        console.log('Connection ended...');
-        //TODO destroy the client? remove it from queues etc..
     });
 
 }));
@@ -160,81 +118,80 @@ function parse_message(msg){
         const userID = msg[1];
         const uname  = msg[2];
         const pass   = msg[3];
-        if (db[uname] == undefined) {
-            console.log(uname + ' does not exist in the database');
-            players[userID].socket.send(JSON.stringify(['signed', 'non existing username']));
-        }
-        else{
-            if(db[uname].verified == 'false'){
-                if(pass != db[uname].verification){
-                    console.log(uname + ', wrong verification');
-                    players[userID].socket.send(JSON.stringify(['signed', 'wrong verification password, check your inbox']));
-                    return;
-                }
-                else{
-                    db[uname].verified = 'true';
-                    delete db[uname].verification;
-                    players[userID].sign(uname, db[uname].elo, db[uname].dev);
-                    players[userID].socket.send(JSON.stringify(['signed', 'success', uname, db[uname].elo]));
-                    fs.writeFileSync('./database.json', JSON.stringify(db), err => {
-                        if(err) throw err;
-                        console.log('user verified');
-                    });
-                }
-            }
+
+        uModel.userModel.findOne({username: uname}, (err, user)=>{
+            if(err){ console.log(err); }
             else{
-                if(pass == db[uname].password){
-                    console.log(uname + ' signed in');
-                    players[userID].sign(uname, db[uname].elo, db[uname].dev);
-                    players[userID].socket.send(JSON.stringify(['signed', 'success', uname, db[uname].elo]));
+                if(user === null){//user doesn't exist
+                    console.log(uname + ' does not exist in the database');
+                    players[userID].socket.send(JSON.stringify(['signed', 'non existing username']));
                 }
                 else{
-                    console.log(uname + ' wrong password');
-                    players[userID].socket.send(JSON.stringify(['signed', 'wrong password']));
+                    if(user.verified === false){
+                        if(user.verification === pass){
+                            user.verified = true; user.markModified('verified');
+                            user.verification = undefined; 
+                            players[userID].sign(uname, user.elo, user.dev);
+                            players[userID].socket.send(JSON.stringify(['signed', 'success', uname, user.elo]));
+                            user.save((err)=>{if(err)console.log(err);});
+                        }
+                        else{
+                            console.log(uname + ', wrong verification');
+                            players[userID].socket.send(JSON.stringify(['signed', 'wrong verification password, check your inbox']));
+                        }
+                    }
+                    else{
+                        if(pass === user.password){
+                            console.log(uname + ' signed in');
+                            players[userID].sign(uname, user.elo, user.dev);
+                            players[userID].socket.send(JSON.stringify(['signed', 'success', uname, user.elo]));
+                        }
+                        else{
+                            console.log(uname + ' wrong password');
+                            players[userID].socket.send(JSON.stringify(['signed', 'wrong password']));
+                        }
+                    }
                 }
             }
-        }
+        });
     }
     else if(msg[0] == 'register'){
         const userID = msg[1];
         const uname  = msg[2];
         const pass   = msg[3];
         const mail   = msg[4];
-        if (db[uname] == undefined) {
-            const verification = (Math.random().toString(36)+'00000000000000000').slice(2, 13);
-            const message = {
-                from: 'dama23156@gmail.com',
-                to: mail,
-                subject: 'welcome to checkers 2.0',
-                text: 'hey ' + uname + ', welcome to checkers 2.0, to finish registration simply use this password in your next sign in: ' + verification + ', after that you can sign in normally with your password.',
-                html: '<p>hey ' + uname + ', welcome to <b>checkers 2.0</b>, to finish registration simply use this password in your next sign in: <b>' + verification + '</b>, after that you can sign in normally with your password.</p>'
-            };
-            transport.sendMail(message, (err) => {
-                if(err){
-                    console.log(err);
-                    players[userID].socket.send(JSON.stringify(['registered', 'something went wrong']));
-                }
-                else{
-                    db[uname] = {
-                        'password': pass,
-                        'email': mail,
-                        'elo': '1500',
-                        'dev': '350',
-                        'verified': 'false',
-                        'verification': sha.sha256(verification),
-                    };
-                    console.log('email sent, user ' + uname + ' registered');
-                    players[userID].socket.send(JSON.stringify(['registered', 'success']));
-                    fs.writeFileSync('./database.json', JSON.stringify(db), err => {
-                        if(err) throw err;
-                        console.log('new user added');
+
+        uModel.userModel.findOne({username: uname}, (err, user)=>{
+            if(err){ console.log(err); }
+            else{
+                if(user === null){
+                    const verification = (Math.random().toString(36)+'00000000000000000').slice(2, 13);
+                    const message = welcomeLetter(mail, uname, verification);
+                    transport.sendMail(message, (err) => {
+                        if(err){
+                            console.log(err);
+                            players[userID].socket.send(JSON.stringify(['registered', 'mailman fault']));
+                        }
+                        else{
+                            const newUser = {
+                                'username': uname,
+                                'password': pass,
+                                'email': mail,
+                                'verification': sha.sha256(verification),
+                            };
+                            console.log('email sent, user ' + uname + ' registered');
+                            players[userID].socket.send(JSON.stringify(['registered', 'success']));
+                            const doc = new uModel.userModel(newUser);
+                            doc.save((err)=>{if(err)console.log(err);});
+                            // await doc.save();
+                        }
                     });
                 }
-            });
-        }
-        else{
-            players[userID].socket.send(JSON.stringify(['registered', 'username already exists']));
-        }
+                else{
+                    players[userID].socket.send(JSON.stringify(['registered', 'username already exists']));
+                }
+            }
+        });
     }
     else{
         console.log(msg);
