@@ -1,7 +1,7 @@
 {
     //s2c
     ['handshake',   userID], 
-    ['game',        color, game_hash, opp_name, opp_elo],
+    ['game',        color, gameID, opp_name, opp_elo],
     ['move',        move, time],
     ['end',         score, rating_shift],
     ['signed',      success, name, elo],
@@ -10,15 +10,26 @@
 
     //c2s
     ['new_game',    userID ],
-    ['flag',        game_hash, userID],
-    ['move',        game_hash, userID, move, time],
+    ['flag',        gameID, userID],
+    ['move',        gameID, userID, move, time],
     ['signin',      userID, username, password],
     ['signin',      userID, username, password],
     ['register',    userID, username, password, email],
+
+    //s2ai
+    ['game',        gameID, side, level],
+    ['move',        gameID, move, TODO: time],
+    ['end',         gameID],
+    //debug
+    ['show',        gameID],
+
+    //ai2s
+    ['ai'           gameID, move],
 }
 
 
 
 mongodump --db users
 mongorestore --db users dump/users  
+
 
