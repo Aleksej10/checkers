@@ -27,6 +27,8 @@
     --light-2: #eeeeee;
     --light-3: #ffffff;
     /* accent */
+
+    --accent: #0078ff;
     --accent: #ffff33;
 
     --box-shadow: 0.5vmin  0.5vmin 1vmin var(--mid-1),
@@ -71,9 +73,18 @@
 *{
     transition-timing-function: ease-out;
     transition: color 0.3s;
+    /* box-sizing: border-box; */
 }
 
 @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap');
+
+
+@font-face {
+    font-family: 'MrRobot';
+    font-style: normal;
+    font-weight: normal;
+    src: local('MrRobot'), url('./MRROBOT.woff') format('woff');
+}
 
 body {
     font-family: 'IBM Plex Mono SemiBold', monospace; 
@@ -84,6 +95,9 @@ body {
     align-items: center;
 }
 
+p{
+    margin: var(--p-margin) 0 var(--p-margin) 0
+}
 
 .navbar{
 	height: 8vmin;
@@ -144,6 +158,12 @@ body {
     transition: color 0.3s;
 }
 
+.robot-text{
+    font-family: 'MrRobot', normal; 
+    color: red;
+    color: var(--accent);
+    font-size: 6vmin;
+}
 
 .h-text:hover{
     color: var(--dark-3);
@@ -157,20 +177,25 @@ body {
     font-size: 3vmin;
 }
 
+
 .elo{
     color: var(--light-3);
 }
 
+.menu{
+    position: relative;
+	display: flex;
+	flex-direction: column; 
+    margin-top: 20vmin;
+	justify-content: center;
+	align-items: center;
+}
 
 .new_game {
-	height: 12vmin;
-    width: 42vmin;
-	display: flex;
-    box-sizing: border-box;
-    margin: auto;
-    margin-top: 20vmin;
     position: relative;
+	display: flex;
 	flex-direction: row; 
+    margin-bottom: 2vmin;
 	justify-content: center;
 	align-items: center;
 }

@@ -242,7 +242,7 @@ function parse_message(msg){
     }
     else if(msg[0] == 'move'){
         const m = msg[1];
-        if(msg[2] != 'auto'){
+        if(msg[2] != 'auto'){ 
             opponent_time = parseInt(msg[2]);
         }
         var move = new Move(m._type, m._fromSquare,  m._toSquare, m._captureSquare);

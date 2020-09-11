@@ -18,7 +18,7 @@
 
     //s2ai
     ['game',        gameID, side, level],
-    ['move',        gameID, move, TODO: time],
+    ['move',        gameID, move, TODO, time],
     ['end',         gameID],
     //debug
     ['show',        gameID],
