@@ -87,7 +87,7 @@
 }
 
 body {
-    font-family: 'IBM Plex Mono SemiBold', monospace; 
+    font-family: 'IBM Plex Mono', monospace; 
     background: var(--mid-3);
     overflow: hidden;
     display: block;
@@ -171,6 +171,7 @@ p{
 
 .l-text{
     font-size: 7vmin;
+    font-weight: 600;
 }
 
 .s-text{

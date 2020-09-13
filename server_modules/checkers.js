@@ -57,9 +57,9 @@ function reverse(n){
     return n;
 }
 
-const Side = Object.freeze({'black':true, 'white':false})
+const Side = Object.freeze({'black':-1, 'white':1})
 
-const mType = Object.freeze({'silent':1, 'capture':2, 'promotion':3})
+const mType = Object.freeze({'silent':0, 'capture':1, 'promotion':2})
 
 class Move {
     constructor(m, f, t, c){

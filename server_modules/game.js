@@ -19,14 +19,14 @@ class Game {
         this._pos.playMove(move);
         otherPlayer.socket.send(JSON.stringify(['move', m, time]));
 
-        var moves = this._pos.genMoves(); //auto play forcing moves
-        while(moves.length == 1){ 
-            this._pos.playMove(moves[0]);
-            moves[0].stringify();
-            this._player1.socket.send(JSON.stringify(['move', moves[0], 'auto']));
-            this._player2.socket.send(JSON.stringify(['move', moves[0], 'auto']));
-            moves = this._pos.genMoves();
-        }
+        // var moves = this._pos.genMoves(); //auto play forcing moves
+        // while(moves.length == 1){ 
+        //     this._pos.playMove(moves[0]);
+        //     moves[0].stringify();
+        //     this._player1.socket.send(JSON.stringify(['move', moves[0], 'auto']));
+        //     this._player2.socket.send(JSON.stringify(['move', moves[0], 'auto']));
+        //     moves = this._pos.genMoves();
+        // }
 
         
         if(this._pos.over()){

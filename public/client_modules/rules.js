@@ -75,9 +75,9 @@ function pow_d(n){
     return dva;
 }
 
-const Side = Object.freeze({'black':true, 'white':false})
+const Side = Object.freeze({'black':-1, 'white':1})
 
-const mType = Object.freeze({'silent':1, 'capture':2, 'promotion':3})
+const mType = Object.freeze({'silent':0, 'capture':1, 'promotion':2})
 
 class Move {
     constructor(m, f, t, c){
@@ -337,7 +337,7 @@ class Pos {
             this.switch_side();
         }
         else{
-            process.stdout.write('you discovered a new move type\n');
+            console.log('you discovered a new move type\n');
         }
     }
 

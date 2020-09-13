@@ -179,6 +179,11 @@ function new_game(elem){
     load_body(elem, 'pages/loader.html');
 }
 
+function robot(elem){
+    ws.send(JSON.stringify(['robot_game', id]));
+    load_body(elem, 'pages/loader.html');
+}
+
 function print_names(yourName, yourElo, oppName, oppElo){
     const op_elo = (oppElo == '?') ? '?' : String(parseInt(oppElo));
     const yr_elo = (yourElo == '?') ? '?' : String(parseInt(yourElo));

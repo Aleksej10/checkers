@@ -13,23 +13,23 @@
     ['flag',        gameID, userID],
     ['move',        gameID, userID, move, time],
     ['signin',      userID, username, password],
-    ['signin',      userID, username, password],
     ['register',    userID, username, password, email],
+    ['robot_game',  userID ],
 
     //s2ai
     ['game',        gameID, side, level],
-    ['move',        gameID, move, TODO, time],
-    ['end',         gameID],
+    ['move',        gameID, userID, move, time],
+    ['end',         gameID], obsolete?
     //debug
     ['show',        gameID],
 
     //ai2s
-    ['ai'           gameID, move],
+    ['move'         gameID, userID, move, time],
 }
-
 
 
 mongodump --db users
 mongorestore --db users dump/users  
 
 
+https://github.com/zaphoyd/websocketpp

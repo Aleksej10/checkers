@@ -27,15 +27,11 @@ mong.connection.on('error', (e) => { console.log(e); });
 let transport = mailer.createTransport({
     host: 'smtp.gmail.com',
     port: 465,
-    auth:{
-        user: 'dama23156',
-        pass: 'eHx8LiLCbTnLqtT'
-    }
+    auth:{ user: 'dama23156', pass: 'eHx8LiLCbTnLqtT' }
 });
 
 function welcomeLetter(mail, uname, verification){
     const msg = {
-        // from: 'dama23156@gmail.com',
         from: 'checkers.org',
         to: mail,
         subject: 'welcome to checkers 2.0',
@@ -74,6 +70,8 @@ wss.on('connection', ((ws, req) => {
     });
 
 }));
+
+var aiID;
 
 function parse_message(msg){
     if(msg[0] == 'move'){
@@ -114,10 +112,29 @@ function parse_message(msg){
             players[player2].socket.send(JSON.stringify(['game', player2_color, gameID, players[player1].name, players[player2].elo, players[player1].elo]));
         }
     }
+    else if(msg[0] == 'robot_game'){
+        const player1 = msg[1];
+        const player2 = aiID;
+        var player1_color = 'white';
+        var player2_color = 'black';
+        var player_side   = 1;
+        if(Math.random() >= 0.5){
+            player1_color = 'black';
+            player2_color = 'white';
+            player_side   = -1;
+        }
+        const gameID = player1 + player2;
+        games[gameID] = new gm.Game(gameID, ch.Pos.initial(), players[player1], players[player2], player1_color, player2_color);
+        console.log('new game started: ' + gameID);
+        players[player1].socket.send(JSON.stringify(['game', player1_color, gameID, players[player2].name, players[player1].elo, players[player2].elo]));
+        players[player2].socket.send(JSON.stringify(['game', gameID, player_side, 300]));
+    }
     else if(msg[0] == 'signin'){
         const userID = msg[1];
         const uname  = msg[2];
         const pass   = msg[3];
+
+        if(uname == "ai") aiID = userID;
 
         uModel.userModel.findOne({username: uname}, (err, user)=>{
             if(err){ console.log(err); }
