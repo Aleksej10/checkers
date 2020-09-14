@@ -73,7 +73,7 @@
 *{
     transition-timing-function: ease-out;
     transition: color 0.3s;
-    /* box-sizing: border-box; */
+    box-sizing: border-box;
 }
 
 @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap');
@@ -102,7 +102,6 @@ p{
 .navbar{
 	height: 8vmin;
     width: 100%;
-    box-sizing: border-box;
     display: flex;
     position: relative;
 	flex-direction: row; 
@@ -124,7 +123,6 @@ p{
     width: 42vmin;
 	display: flex;
     position: absolute;
-    box-sizing: border-box;
     margin: auto;
 	flex-direction: row; 
 	align-items: center;
@@ -135,7 +133,7 @@ p{
 }
 
 .signin{
-	justify-content: right;
+	justify-content: flex-end;
     right: 0;
 }
 
@@ -205,7 +203,6 @@ p{
 	height: var(--board-side);
     width: var(--board-side);
 	display: flex;
-    box-sizing: border-box;
     margin: var(--board-margin);
     position: relative;
 	flex-direction: row; 
@@ -273,7 +270,6 @@ p{
 	height: var(--sign-form-h);
     width: var(--sign-form-w);
 	display: flex;
-    box-sizing: border-box;
     margin: auto;
     margin-top: 3vmin;
     position: relative;
@@ -289,7 +285,6 @@ p{
 .form-div {
 	height: 10vmin;
 	display: flex;
-    box-sizing: border-box;
     position: relative;
 	flex-direction: row; 
 	justify-content: left;
@@ -298,7 +293,6 @@ p{
 
 
 input {
-    box-sizing: border-box;
     width: 100%;
     background-color: var(--light-2);
     color: var(--dark-2);
@@ -366,7 +360,6 @@ input {
 	height: 30vmin;
     width: 30vmin;
 	display: flex;
-    box-sizing: border-box;
     margin: auto;
     margin-top: 15vmin;
     position: relative;

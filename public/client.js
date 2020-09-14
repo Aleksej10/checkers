@@ -75,7 +75,6 @@ function playIt(elem){
 
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
-// const domain = '192.168.43.45';
 const domain = 'localhost';
 
 var ws = new WebSocket('ws://'+domain+':8081');

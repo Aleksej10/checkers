@@ -17,7 +17,7 @@
 
     //s2ai
    *['handshake',   userID], 
-   *['game',        gameID, side, level],
+   *['game',        gameID, side, level, start_time],
     ['move',        gameID, move, time],
     ['end',         gameID, score, rating_shift],
 

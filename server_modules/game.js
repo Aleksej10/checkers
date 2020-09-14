@@ -19,6 +19,8 @@ class Game {
         this._pos.playMove(move);
         otherPlayer.socket.send(JSON.stringify(['move', this._id, m, time]));
 
+        console.log(m);
+
         // var moves = this._pos.genMoves(); //auto play forcing moves
         // while(moves.length == 1){ 
         //     this._pos.playMove(moves[0]);

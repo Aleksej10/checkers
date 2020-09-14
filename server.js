@@ -15,7 +15,8 @@ const app = express();
 const path = require('path');
 const mailer = require('nodemailer');
 const mong = require('mongoose');
-const dbString = "mongodb://localhost:27017/users";
+const dbString = 'mongodb://localhost:27017/users';
+const { exec } = require('child_process');
 
 mong.connect(dbString, {
     useNewUrlParser: true,
@@ -44,6 +45,12 @@ function welcomeLetter(mail, uname, verification){
 // const domain = require('os').networkInterfaces()['wlan0'][0]['address'];
 const domain = 'localhost';
 const port = '8080';
+const command = 'sed -E -i "s:^const domain.*:const domain = \'' + domain + '\';:g" public/client.js'
+exec(command, (err, _, _1) => {
+    if(err) { console.log(err.message); }
+    else{ console.log("domain updated in client.js"); }
+});
+
 
 app.use(express.static(path.join(__dirname, 'public')));
 
@@ -129,7 +136,7 @@ function parse_message(msg){
         console.log('new game started: ' + gameID);
         const start_time = 3 * 60 * 100; // 3 mins
         players[player1].socket.send(JSON.stringify(['game', player1_color, gameID, players[player2].name, players[player1].elo, players[player2].elo, start_time]));
-        players[player2].socket.send(JSON.stringify(['game', gameID, player_side, 300]));
+        players[player2].socket.send(JSON.stringify(['game', gameID, player_side, 100, start_time]));
     }
     else if(msg[0] == 'signin'){ // ['signin', userID, username, password]
         const userID = msg[1];
