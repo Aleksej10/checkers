@@ -229,26 +229,27 @@ function tick(){
 }
 
 function parse_message(msg){
-    if(msg[0] == 'handshake'){
+    if(msg[0] == 'handshake'){ // ['handshake',   userID]
         id = msg[1];
     }
-    else if(msg[0] == 'game'){
+    else if(msg[0] == 'game'){ // ['game', color, gameID, opp_name, your_elo, opp_elo, start_time]
         if(msg[1] == 'white')   game_side = Side.white;
         else                    game_side = Side.black;
         current_game = msg[2];
         opponent_name = msg[3];
         your_elo = msg[4];
         opponent_elo = msg[5];
-        your_time = 3 * 60 * 100;
-        opponent_time = 3 * 60 * 100;
+        your_time = parseInt(msg[6]);
+        opponent_time = parseInt(msg[6]);
         game_pos = Pos.initial();
         load_body(this, 'pages/board.html');
         setTimeout(() => {after_new_game();}, 500); //doesn't work without timeot
     }
-    else if(msg[0] == 'move'){
-        const m = msg[1];
-        if(msg[2] != 'auto'){ 
-            opponent_time = parseInt(msg[2]);
+    else if(msg[0] == 'move'){ //['move', gameID, move, time]
+        //gameID ignored, used for AI only
+        const m = msg[2];
+        if(msg[3] != 'auto'){ 
+            opponent_time = parseInt(msg[3]);
         }
         var move = new Move(m._type, m._fromSquare,  m._toSquare, m._captureSquare);
         move.destringify();
@@ -256,19 +257,20 @@ function parse_message(msg){
         flip_flop();
         drawBoard(getBoardDiv());
     }
-    else if(msg[0] == 'end'){
+    else if(msg[0] == 'end'){ //['end', gameID, score, rating_shift]
+        //gameID ignored, used for AI only
         clearInterval(ticker);
         document.getElementById('fflop').style.visibility = 'hidden';
         document.getElementById('rematch').style.visibility = 'visible';
         var delta = undefined;
-        const asInt = parseInt(msg[2]);
+        const asInt = parseInt(msg[3]);
         delta = (asInt > 0) ? ('+' + String(asInt)) : String(asInt);
         if(delta == 'NaN') delta = '';
 
-        if(msg[1] == 'won'){
+        if(msg[2] == 'won'){
             print_result('you won, congrats.', delta);
         }
-        else if(msg[1] == 'lost'){
+        else if(msg[2] == 'lost'){
             print_result('you are pathetic.', delta);
         }
         else{

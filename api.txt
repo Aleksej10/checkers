@@ -1,30 +1,28 @@
 {
     //s2c
-    ['handshake',   userID], 
-    ['game',        color, gameID, opp_name, opp_elo],
-    ['move',        move, time],
-    ['end',         score, rating_shift],
-    ['signed',      success, name, elo],
-    ['signed',      failure],
-    ['registered',  msg],
+   *['handshake',   userID], 
+   *['game',        color, gameID, opp_name, your_elo, opp_elo, start_time],
+   *['move',        gameID, move, time],
+   *['end',         gameID, score, rating_shift],
+   *['signed',      status, name, elo],
+   *['registered',  msg],
 
     //c2s
-    ['new_game',    userID ],
-    ['flag',        gameID, userID],
-    ['move',        gameID, userID, move, time],
-    ['signin',      userID, username, password],
-    ['register',    userID, username, password, email],
-    ['robot_game',  userID ],
+   *['new_game',    userID ], TODO add time
+   *['robot_game',  userID ], TIDI add time, level
+   *['flag',        gameID, userID],
+   *['move',        gameID, userID, move, time],
+   *['signin',      userID, username, password],
+   *['register',    userID, username, password, email],
 
     //s2ai
-    ['game',        gameID, side, level],
-    ['move',        gameID, userID, move, time],
-    ['end',         gameID], obsolete?
-    //debug
-    ['show',        gameID],
+   *['handshake',   userID], 
+   *['game',        gameID, side, level],
+    ['move',        gameID, move, time],
+    ['end',         gameID, score, rating_shift],
 
     //ai2s
-    ['move'         gameID, userID, move, time],
+   *['move',        gameID, userID, move, time],
 }
 
 

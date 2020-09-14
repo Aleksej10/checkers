@@ -74,7 +74,7 @@ wss.on('connection', ((ws, req) => {
 var aiID;
 
 function parse_message(msg){
-    if(msg[0] == 'move'){
+    if(msg[0] == 'move'){ // ['move', gameID, userID, move, time]
         const gameID = msg[1];
         const userID = msg[2];
         var otherPlayer = undefined;
@@ -82,16 +82,16 @@ function parse_message(msg){
         else                            otherPlayer = players[gameID.slice(0, 11)];
         games[gameID].playMove(msg[3], otherPlayer, msg[4]);
     }
-    else if(msg[0] == 'flag'){
+    else if(msg[0] == 'flag'){ // ['flag', gameID, userID]
         const gameID = msg[1];
         const userID = msg[2];
         if(gameID.search(userID) == 0)  otherPlayer = gameID.slice(11);
         else                            otherPlayer = gameID.slice(0, 11);
         const deltas = gl.glicko(players[userID], players[otherPlayer], 0);
-        players[userID].socket.send(JSON.stringify(['end', 'lost', deltas[0]]));
-        players[otherPlayer].socket.send(JSON.stringify(['end', 'won', deltas[1]]));
+        players[userID].socket.send(JSON.stringify(['end', gameID, 'lost', deltas[0]]));
+        players[otherPlayer].socket.send(JSON.stringify(['end', gameID, 'won', deltas[1]]));
     }
-    else if(msg[0] == 'new_game'){
+    else if(msg[0] == 'new_game'){ // ['new_game', userID ]
         const userID = msg[1];
         waiting[userID] = 1;
         if(Object.keys(waiting).length >= 2){
@@ -108,11 +108,12 @@ function parse_message(msg){
             const gameID = player1 + player2;
             games[gameID] = new gm.Game(gameID, ch.Pos.initial(), players[player1], players[player2], player1_color, player2_color);
             console.log('new game started: ' + gameID);
-            players[player1].socket.send(JSON.stringify(['game', player1_color, gameID, players[player2].name, players[player1].elo, players[player2].elo]));
-            players[player2].socket.send(JSON.stringify(['game', player2_color, gameID, players[player1].name, players[player2].elo, players[player1].elo]));
+            const start_time = 3 * 60 * 100; // 3 mins
+            players[player1].socket.send(JSON.stringify(['game', player1_color, gameID, players[player2].name, players[player1].elo, players[player2].elo, start_time]));
+            players[player2].socket.send(JSON.stringify(['game', player2_color, gameID, players[player1].name, players[player2].elo, players[player1].elo, start_time]));
         }
     }
-    else if(msg[0] == 'robot_game'){
+    else if(msg[0] == 'robot_game'){ // ['robot_game', userID ] TODO add time, level
         const player1 = msg[1];
         const player2 = aiID;
         var player1_color = 'white';
@@ -126,10 +127,11 @@ function parse_message(msg){
         const gameID = player1 + player2;
         games[gameID] = new gm.Game(gameID, ch.Pos.initial(), players[player1], players[player2], player1_color, player2_color);
         console.log('new game started: ' + gameID);
-        players[player1].socket.send(JSON.stringify(['game', player1_color, gameID, players[player2].name, players[player1].elo, players[player2].elo]));
+        const start_time = 3 * 60 * 100; // 3 mins
+        players[player1].socket.send(JSON.stringify(['game', player1_color, gameID, players[player2].name, players[player1].elo, players[player2].elo, start_time]));
         players[player2].socket.send(JSON.stringify(['game', gameID, player_side, 300]));
     }
-    else if(msg[0] == 'signin'){
+    else if(msg[0] == 'signin'){ // ['signin', userID, username, password]
         const userID = msg[1];
         const uname  = msg[2];
         const pass   = msg[3];
@@ -172,7 +174,7 @@ function parse_message(msg){
             }
         });
     }
-    else if(msg[0] == 'register'){
+    else if(msg[0] == 'register'){ // ['register', userID, username, password, email]
         const userID = msg[1];
         const uname  = msg[2];
         const pass   = msg[3];
