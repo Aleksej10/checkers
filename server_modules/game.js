@@ -20,6 +20,7 @@ class Game {
         otherPlayer.socket.send(JSON.stringify(['move', this._id, m, time]));
 
         console.log(m);
+        console.log(m.toString());
 
         // var moves = this._pos.genMoves(); //auto play forcing moves
         // while(moves.length == 1){ 
