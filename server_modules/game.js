@@ -19,10 +19,7 @@ class Game {
         this._pos.playMove(move);
         otherPlayer.socket.send(JSON.stringify(['move', this._id, m, time]));
 
-        console.log(m);
-        console.log(m.toString());
-
-        // var moves = this._pos.genMoves(); //auto play forcing moves
+        // var moves = this._pos.genMoves(); //auto play forcing moves, doesn't work with AI
         // while(moves.length == 1){ 
         //     this._pos.playMove(moves[0]);
         //     moves[0].stringify();
@@ -30,7 +27,6 @@ class Game {
         //     this._player2.socket.send(JSON.stringify(['move', this._id, moves[0], 'auto']));
         //     moves = this._pos.genMoves();
         // }
-
         
         if(this._pos.over()){
             if(this._pos.result() == 'draw'){

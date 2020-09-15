@@ -65,7 +65,7 @@ const wss = new WebSocketServer({ port: 8081 });
 
 wss.on('connection', ((ws, req) => {
     const ip = req.socket.remoteAddress;
-    console.log(ip + " connected");
+    console.log("ip " + ip + " connected");
     const userID = (Math.random().toString(36)+'00000000000000000').slice(2, 13); //TODO sha256(ip)
     players[userID] = new pl.Player(userID, ws);
     console.log('id ' + userID + ' connected');
@@ -133,7 +133,7 @@ function parse_message(msg){
         }
         const gameID = player1 + player2;
         games[gameID] = new gm.Game(gameID, ch.Pos.initial(), players[player1], players[player2], player1_color, player2_color);
-        console.log('new game started: ' + gameID);
+        console.log('new game created: ' + gameID);
         const start_time = 3 * 60 * 100; // 3 mins
         players[player1].socket.send(JSON.stringify(['game', player1_color, gameID, players[player2].name, players[player1].elo, players[player2].elo, start_time]));
         players[player2].socket.send(JSON.stringify(['game', gameID, player_side, 100, start_time]));
