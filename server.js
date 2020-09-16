@@ -115,7 +115,7 @@ function parse_message(msg){
             const gameID = player1 + player2;
             games[gameID] = new gm.Game(gameID, ch.Pos.initial(), players[player1], players[player2], player1_color, player2_color);
             console.log('new game started: ' + gameID);
-            const start_time = 3 * 60 * 100; // 3 mins
+            const start_time = 3 * 60 * 100; // 3 min
             players[player1].socket.send(JSON.stringify(['game', player1_color, gameID, players[player2].name, players[player1].elo, players[player2].elo, start_time]));
             players[player2].socket.send(JSON.stringify(['game', player2_color, gameID, players[player1].name, players[player2].elo, players[player1].elo, start_time]));
         }
@@ -134,9 +134,9 @@ function parse_message(msg){
         const gameID = player1 + player2;
         games[gameID] = new gm.Game(gameID, ch.Pos.initial(), players[player1], players[player2], player1_color, player2_color);
         console.log('new game created: ' + gameID);
-        const start_time = 3 * 60 * 100; // 3 mins
+        const start_time = 5 * 60 * 100; // 5 min
         players[player1].socket.send(JSON.stringify(['game', player1_color, gameID, players[player2].name, players[player1].elo, players[player2].elo, start_time]));
-        players[player2].socket.send(JSON.stringify(['game', gameID, player_side, 100, start_time]));
+        players[player2].socket.send(JSON.stringify(['game', gameID, player_side, 300, start_time]));
     }
     else if(msg[0] == 'signin'){ // ['signin', userID, username, password]
         const userID = msg[1];
