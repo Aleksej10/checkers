@@ -139,8 +139,14 @@ class Pos {
         this._whiteKing = reverse(wk);
     }
 
-    get side(){
-        return this._side;
+    get side(){ return this._side; }
+    get fifty(){ return this._fifty; }
+
+    toString(){
+        return  this._black.toString() + '|' +
+                this._white.toString() + '|' +
+                this._blackKing.toString() + '|' +
+                this._whiteKing.toString();
     }
 
     genMoves(){
@@ -327,12 +333,6 @@ class Pos {
     over(){
         const move_n = this.genMoves().length;
         return ((move_n == 0) || (this._fifty > 25)) ? true : false;
-    }
-
-    result(){
-        if(this._fifty > 25) return 'draw';
-        if(this._side == Side.black) return 'white';
-        return 'black';
     }
 }
 
