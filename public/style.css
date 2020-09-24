@@ -9,7 +9,6 @@
     --flop-top: 46vmin;
     --rematch-left: 85vw;
     --rematch-top: 47.5vmin;
-    --sign-form-h: 70vmin;
     --sign-form-w: 50vmin;
     --reg-h: 75vmin;
 
@@ -28,11 +27,12 @@
     --light-3: #ffffff;
     /* accent */
 
-    --accent: #0078ff;
     --accent: #ffff33;
+    --accent-2: #0078ff;
 
     --box-shadow: 0.5vmin  0.5vmin 1vmin var(--mid-1),
                  -0.5vmin -0.5vmin 1vmin var(--light-1);
+    --box-shadow-2: 0 2px 6px 0 rgba(0, 0, 0, .2);
     --box-shadow-hover: 1.0vmin  1.0vmin 1.5vmin var(--mid-1),
                        -1.0vmin -1.0vmin 1.5vmin var(--light-1);
 }
@@ -45,7 +45,6 @@
         --flop-top: none;
         --rematch-left: 42vw;
         --rematch-top: none;
-        --sign-form-h: 75vmin;
         --sign-form-w: 70vmin;
         --reg-h: 80vmin;
     }
@@ -59,7 +58,6 @@
         --flop-top: 45vmin;
         --rematch-left: 85vw;
         --rematch-top: 42.5vmin;
-        --sign-form-h: 70vmin;
         --sign-form-w: 50vmin;
         --reg-h: 75vmin;
     }
@@ -100,8 +98,6 @@ p{
 }
 
 .navbar{
-	height: 8vmin;
-    width: 100%;
     display: flex;
     position: relative;
 	flex-direction: row; 
@@ -119,31 +115,18 @@ p{
 }
 
 .nav-elem{
-	height: 8vmin;
-    width: 42vmin;
 	display: flex;
-    position: absolute;
-    margin: auto;
+    position: relative;
 	flex-direction: row; 
 	align-items: center;
 }
 
-.logo{
-	justify-content: left;
-}
-
-.signin{
-	justify-content: flex-end;
-    right: 0;
-}
-
 .logo-pawn {
-    position: absolute;
+    position: relative;
     height: 5vmin; 
     width: 5vmin;
     margin: 0.6vmin;
     border-radius: 50%;
-    right: 0;
     box-shadow: var(--box-shadow);
 }
 
@@ -151,7 +134,6 @@ p{
     font-size: 4.5vmin;
     color: var(--dark-2);
     user-select: none;
-    padding: 1vmin;
     transition-timing-function: ease-out;
     transition: color 0.3s;
 }
@@ -267,7 +249,6 @@ p{
 
 
 .sign-form {
-	height: var(--sign-form-h);
     width: var(--sign-form-w);
 	display: flex;
     margin: auto;
@@ -277,18 +258,19 @@ p{
 	justify-content: left;
 	align-items: left;
     border-radius: 2vmin;
-    padding: 2vmin;
+    padding: 2vmin 2vmin 0 2vmin;
     box-shadow: var(--box-shadow);
     background-color: var(--mid-3);
 }
 
 .form-div {
-	height: 10vmin;
+	/* height: 10vmin; */
 	display: flex;
     position: relative;
 	flex-direction: row; 
 	justify-content: left;
 	align-items: center;
+    margin-bottom: 2vmin;
 }
 
 
@@ -296,20 +278,28 @@ input {
     width: 100%;
     background-color: var(--light-2);
     color: var(--dark-2);
-    border: 1vmin solid var(--light-2);
+    border: none;
+    padding: 1vmin;
     border-radius: 1vmin;
     font-size: 4.5vmin;
     margin-bottom: 2vmin;
     margin-top: 1vmin;
 }
 
+input:focus{
+    border: none;
+    outline: none;
+    box-shadow: none;
+}
+
 .submit-btn {
-    background: var(--accent);
-    border-radius: 2vmin;
+    height: 8vmin;
 	justify-content: center;
+    background: var(--accent);
     transition: box-shadow 0.3s;
-    box-shadow: var(--box-shadow);
-    margin-top: 5vmin;
+    box-shadow: var(--box-shadow-2);
+    border-radius: 2vmin;
+    margin-top: 2vmin;
 }
 
 .submit-btn:hover {
@@ -323,15 +313,6 @@ input {
 
 .hyper-text:hover{
     color: var(--accent);
-}
-
-.reg-form{
-    height: var(--reg-h);
-}
-
-.input-div{
-    height: 5vmin;
-	align-items: left;
 }
 
 .title-div{
@@ -350,9 +331,6 @@ input {
     font-size: 4.5vmin;
     color: var(--dark-3);
     user-select: none;
-    padding-bottom: 1vmin;
-    padding-left: 1vmin;
-    padding-right: 1vmin;
     position: absolute;
 }
 
