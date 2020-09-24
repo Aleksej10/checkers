@@ -29,11 +29,11 @@ class Game {
     }
 
     over(){
-        return this._pos.over() || treefold();
+        return this._pos.over() || this.treefold();
     }
 
     result(){
-        return ((this._pos.fifty > 25) || treefold()) ? 0 : -this._pos.side;
+        return ((this._pos.fifty > 25) || this.treefold()) ? 0 : -this._pos.side;
     }
 
     playMove(m, otherPlayer, time){
@@ -51,18 +51,18 @@ class Game {
         //     moves = this._pos.genMoves();
         // }
         
-        if(over()){
-            const result = result();
+        if(this.over()){
+            var result = this.result();
             if(result == 0) result = 'draw';
             else if(result == -1) result = 'black';
-            else resuult = 'white';
+            else result = 'white';
 
             if(result == 'draw'){
                 const deltas = gl.glicko(this._player1, this._player2, 0.5);
                 this._player1.socket.send(JSON.stringify(['end', this._id, 'draw', deltas[0]]));
                 this._player2.socket.send(JSON.stringify(['end', this._id, 'draw', deltas[1]]));
             }
-            else if(this._pos.result() == this._player1_color){
+            else if(result == this._player1_color){
                 const deltas = gl.glicko(this._player1, this._player2, 1);
                 this._player1.socket.send(JSON.stringify(['end', this._id, 'won', deltas[0]]));
                 this._player2.socket.send(JSON.stringify(['end', this._id, 'lost', deltas[1]]));
