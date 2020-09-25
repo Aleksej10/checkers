@@ -115,7 +115,20 @@ function flip_flop(){
     else{
         flop.className = 'pawn black';
     }
-
+    var boldPlayer = document.getElementById('player1');
+    var boldClock = document.getElementById('player1-clock');
+    var normPlayer = document.getElementById('player2');
+    var normClock = document.getElementById('player2-clock');
+    if(game_pos.side == game_side){
+        boldPlayer = document.getElementById('player2');
+        boldClock = document.getElementById('player2-clock');
+        normPlayer = document.getElementById('player1');
+        normClock = document.getElementById('player1-clock');
+    }
+    boldPlayer.style.fontWeight = '600';
+    boldClock.style.fontWeight = '600';
+    normPlayer.style.fontWeight = 'normal';
+    normClock.style.fontWeight = 'normal';
 }
 
 function load_body(elem, page){
@@ -158,13 +171,30 @@ document.onkeydown = function (e) {
     }
 }
 
-function after_new_game(){
+function after_new_game(p1_clock, p2_clock){
     drawBoard(getBoardDiv());
-    print_names(your_name, your_elo, opponent_name, opponent_elo);
+    print_names(your_name, your_elo, opponent_name, opponent_elo, p1_clock, p2_clock);
     document.getElementById('fflop').style.visibility = 'visible';
     document.getElementById('rematch').style.visibility = 'hidden';
-    document.getElementById('player1-clock').innerHTML = '3:00:00';
-    document.getElementById('player2-clock').innerHTML = '3:00:00';
+
+    var minutes = '00' + parseInt(p1_clock/6000);
+    var seconds = '00' + parseInt(p1_clock/100) % 60;
+    var milis   = '00' + p1_clock % 100;
+
+    document.getElementById('player1-clock').innerHTML = 
+        minutes.substr(minutes.length-2) + ':' +
+        seconds.substr(seconds.length-2) + ':' +
+        milis.substr(milis.length-2);
+
+    minutes = '00' + parseInt(p2_clock/6000);
+    seconds = '00' + parseInt(p2_clock/100) % 60;
+    milis   = '00' + p2_clock % 100;
+
+    document.getElementById('player2-clock').innerHTML = 
+        minutes.substr(minutes.length-2) + ':' +
+        seconds.substr(seconds.length-2) + ':' +
+        milis.substr(milis.length-2);
+
     ticker = setInterval(tick, 10);
     flip_flop();
 }
@@ -242,7 +272,7 @@ function parse_message(msg){
         opponent_time = parseInt(msg[6]);
         game_pos = Pos.initial();
         load_body(this, 'pages/board.html');
-        setTimeout(() => {after_new_game();}, 500); //doesn't work without timeot
+        setTimeout(() => {after_new_game(opponent_time, your_time);}, 500); //doesn't work without timeot
     }
     else if(msg[0] == 'move'){ //['move', gameID, move, time]
         //gameID ignored, used for AI only

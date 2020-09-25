@@ -81,6 +81,7 @@ wss.on('connection', ((ws, req) => {
 var aiID;
 
 function parse_message(msg){
+    console.log(msg);
     if(msg[0] == 'move'){ // ['move', gameID, userID, move, time]
         const gameID = msg[1];
         const userID = msg[2];
@@ -136,7 +137,7 @@ function parse_message(msg){
         console.log('new game created: ' + gameID);
         const start_time = 5 * 60 * 100; // 5 min
         players[player1].socket.send(JSON.stringify(['game', player1_color, gameID, players[player2].name, players[player1].elo, players[player2].elo, start_time]));
-        players[player2].socket.send(JSON.stringify(['game', gameID, player_side, 300, start_time]));
+        players[player2].socket.send(JSON.stringify(['game', gameID, player_side, 10, start_time]));
     }
     else if(msg[0] == 'signin'){ // ['signin', userID, username, password]
         const userID = msg[1];
