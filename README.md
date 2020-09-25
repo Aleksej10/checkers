@@ -1,7 +1,7 @@
 # Checkers
 
-Minimalist, full stack website, soon to be hosted at [checkers2.xyz](checkers2.xyz)
--[short_demo](https://github.com/Aleksej10/checkers/blob/master/demo.gif)
+Minimalist, full stack website, soon to be hosted at [checkers2.xyz](checkers2.xyz)  
+![demo](https://github.com/Aleksej10/checkers/blob/master/demo.gif)
 
 ## Dependencies
 
